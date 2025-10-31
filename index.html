@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> PAUSE </title>
+    
+    <link rel="icon" href="logo.png" type="image/png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* --- CONFIGURAÇÕES GLOBAIS (Variáveis de Cor) --- */
+        :root {
+            /* MUDE AQUI: Defina sua paleta de cores */
+            --cor-primaria: #0d1117;    /* Um azul-escuro/preto */
+            --cor-secundaria: #161b22;   /* Um cinza-escuro */
+            --cor-destaque: #58a6ff;     /* Um azul claro (links) */
+            --cor-sucesso: #238636;      /* Verde */
+            --cor-texto: #c9d1d9;       /* Cinza claro (texto) */
+            --cor-fundo-transp: rgba(22, 27, 34, 0.85); /* Fundo do container */
+            --cor-borda: rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- Reset Básico --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--cor-texto);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.5s ease;
+        }
+
+        /* --- OPÇÕES DE FUNDO (Controlado via Classe no <body>) --- */
+
+        /* 1. Fundo de Cor (Padrão) */
+        body.bg-color {
+            /* MUDE AQUI: Cor de fundo sólida ou gradiente */
+            
+            /* ATUALIZADO CONFORME SOLICITADO: 
+               A cor sólida padrão agora é o laranja solicitado.
+               Para usar esta cor, mude a classe do <body> para "bg-color".
+            */
+            background: #f8a826; 
+        }
+
+        /* 2. Fundo de Imagem */
+        body.bg-image {
+            /* MUDE AQUI: URL da Imagem de Fundo Externa 
+               (Ex: Pexels, Unsplash, Imgur, etc.)
+            */
+            background-image: url('https://images.pexels.com/photos/167699/pexels-photo-167699.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* 3. Fundo de Vídeo */
+        .background-video {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -2;
+            display: none; /* Oculto por padrão */
+        }
+        body.bg-video .background-video {
+            display: block; /* Mostra o vídeo */
+        }
+        
+        /* NOTA SOBRE YOUTUBE: 
+           Se quiser usar um vídeo do YouTube como fundo, o método é diferente.
+           Você precisará substituir a tag <video> no HTML por um <iframe>
+           e aplicar estilos CSS para cobrir a tela. 
+           O método atual (tag <video>) funciona perfeitamente para links diretos .mp4 (como os do Pexels).
+        */
+
+
+        /* Overlay (para escurecer fundo de imagem/vídeo e melhorar leitura) */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Ajuste a opacidade da sombra */
+            z-index: -1;
+            display: none; /* Oculto por padrão */
+        }
+        body.bg-image .overlay,
+        body.bg-video .overlay {
+            display: block;
+        }
+
+
+        /* --- NOVO: BOTÃO DE COMPARTILHAR (Topo Direito) --- */
+        .share-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--cor-fundo-transp); /* Reutiliza o "glassmorphism" */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid var(--cor-borda);
+            color: var(--cor-texto);
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .share-button:hover {
+            background-color: var(--cor-destaque);
+            color: var(--cor-primaria); /* Contraste com o destaque */
+            transform: scale(1.1);
+        }
+
+
+        /* --- CONTAINER PRINCIPAL (Efeito "Glassmorphism") --- */
+        .container {
+            background: var(--cor-fundo-transp);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--cor-borda);
+            border-radius: 16px;
+            padding: 25px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            /* Posição relativa para o logo flutuar em cima */
+            position: relative; 
+            margin-top: 60px; /* Espaço para o logo que transborda */
+        }
+
+        /* --- LOGO (Círculo) --- */
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--cor-destaque);
+            overflow: hidden;
+            /* Puxa o logo para cima, metade para fora do container */
+            position: absolute; 
+            top: -60px; /* Metade da altura (120px / 2) */
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            background: var(--cor-secundaria);
+        }
+        .logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Garante que a imagem preencha o círculo */
+        }
+
+        /* --- FORMULÁRIO --- */
+        .payment-form {
+            margin-top: 70px; /* Espaço para o logo */
+        }
+        .form-group {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            background: #0d1117; /* Fundo do input */
+            color: var(--cor-texto);
+            font-size: 16px;
+        }
+        .form-group input::placeholder {
+            color: #888;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--cor-destaque);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+        }
+        .form-group small {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* --- BOTÕES DE PIX --- */
+        .payment-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 colunas */
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .pix-button {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: var(--cor-destaque);
+            color: var(--cor-primaria);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .pix-button:hover {
+            background: var(--cor-texto);
+            color: var(--cor-primaria);
+            transform: translateY(-2px);
+        }
+
+        /* --- BOTÃO CTA CUSTOMIZADO (Com Imagem) --- */
+        .custom-cta-container {
+            margin-top: 20px;
+        }
+        .custom-cta-button {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFFFFF; /* Texto sempre branco para contraste */
+            
+            /* ATUALIZADO CONFORME SOLICITADO:
+              MUDE AQUI: Caminho para sua Imagem de Fundo LOCAL (JPG ou PNG) 
+              Exemplo: url('minha-imagem.jpg') ou url('logos/botao.png')
+            */
+            background-image: url('botão.jpg');
+            background-size: cover;
+            background-position: center;
+            
+            position: relative; /* Necessário para a sombra */
+            overflow: hidden;
+            z-index: 1;
+            transition: transform 0.3s ease;
+            border: none;
+        }
+        /* Camada de sombra interna para o texto aparecer */
+        .custom-cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)); /* Sombra */
+            z-index: -1;
+            transition: background 0.3s ease;
+        }
+        .custom-cta-button span {
+            /* Sombra no texto (dupla garantia de legibilidade) */
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 1);
+        }
+        .custom-cta-button:hover {
+            transform: scale(1.02);
+        }
+        .custom-cta-button:hover::before {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)); /* Sombra mais clara no hover */
+        }
+
+
+        /* --- MODAIS (Pop-ups) --- */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            
+            /* Animação de entrada */
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: var(--cor-secundaria);
+            margin: 10% auto;
+            padding: 25px;
+            border: 1px solid var(--cor-borda);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            position: relative;
+            text-align: center;
+        }
+        .modal-content h2 {
+            color: var(--cor-destaque);
+            margin-bottom: 15px;
+        }
+        .modal-content p {
+            margin: 10px 0;
+            color: var(--cor-texto);
+        }
+        .modal-content textarea {
+            width: 100%;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: var(--cor-texto);
+            padding: 10px;
+            border-radius: 5px;
+            resize: none;
+            font-family: monospace; /* Fonte monoespaçada para chaves */
+        }
+        .copy-button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            background: #30363d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .copy-button:hover {
+            background: #444;
+        }
+        .separator {
+            border: none;
+            border-top: 1px solid #30363d;
+            margin: 20px 0;
+        }
+        .close-button, .close-success-button {
+            color: #888;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .close-button:hover,
+        .close-success-button:hover {
+            color: white;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .success-image {
+            max-width: 150px;
+            margin: 10px auto;
+        }
+        .payment-confirmed-button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            background: var(--cor-sucesso);
+            color: #FFFFFF;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .payment-confirmed-button:hover {
+            opacity: 0.8;
+        }
+
+
+        /* --- BOTÃO FLUTUANTE WHATSAPP --- */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25D366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+        }
+
+        /* --- RODAPÉ (ATUALIZADO) --- */
+        footer {
+            position: fixed;
+            bottom: 10px;
+            left: 0; /* Garante que ocupe a largura toda */
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+            z-index: 100;
+            padding: 0 20px;
+        }
+        
+        /* NOVO: Container do conteúdo do rodapé */
+        .footer-content {
+            display: inline-flex; /* Alinha o "Feito por" e o link/logo */
+            align-items: center;
+            justify-content: center;
+        }
+
+        footer a {
+            color: var(--cor-destaque);
+            text-decoration: none;
+            font-weight: bold;
+            
+            /* NOVO: Alinhamento da logo com o texto */
+            display: inline-flex;
+            align-items: center;
+            margin-left: 5px; /* Espaço entre "Feito por" e o link */
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* NOVO: Estilo da Logo no Rodapé */
+        .footer-logo {
+            height: 20px; /* Ajuste a altura da sua logo */
+            width: auto;
+            margin-right: 5px; /* Espaço entre a logo e o texto "aprovados" */
+            vertical-align: middle; 
+        }
+
+        /* --- Ajustes para telas pequenas (Responsividade) --- */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                margin-top: 60px; /* Garante espaço para o logo */
+            }
+            
+            .payment-buttons {
+                /* Muda para 1 coluna em telas pequenas */
+                grid-template-columns: 1fr; 
+            }
+
+            .modal-content {
+                margin: 20% auto; /* Centraliza melhor em telas menores */
+                padding: 20px;
+            }
+
+            .logo-container {
+                width: 100px;
+                height: 100px;
+                top: -50px; /* Metade da nova altura */
+            }
+
+            .payment-form {
+                margin-top: 60px; /* Espaço para o novo logo */
+            }
+            
+            .whatsapp-float {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+
+            /* NOVO: Ajuste do botão de compartilhar */
+            .share-button {
+                top: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+
+            footer {
+                font-size: 12px;
+            }
+            
+            /* NOVO: Ajuste da logo no rodapé */
+            .footer-logo {
+                height: 16px;
+            }
+        }
+    </style>
+    </head>
+
+<body class="bg-video"> 
+
+    <button id="shareButton" class="share-button" title="Compartilhar site">
+        <i class="fas fa-share-alt"></i>
+    </button>
+
+    <video autoplay muted loop class="background-video">
+        <source src="https://www.pexels.com/pt-br/download/video/6789669/" type="video/mp4">
+        Seu navegador não suporta vídeos.
+    </video>
+    
+    <div class="overlay"></div>
+
+    <div class="container">
+        
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo PAUSE" class="logo">
+        </div>
+
+        <form id="userInfoForm" class="payment-form">
+            <div class="form-group">
+                <input type="text" id="name" placeholder="Seu nome completo" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="email" placeholder="Seu melhor e-mail" required>
+            </div>
+            <div class="form-group">
+                <input type="tel" id="phone" placeholder="Seu WhatsApp (Ex: 11999998888)" required pattern="[0-9]{10,11}">
+                <small>Somente números, com DDD.</small>
+            </div>
+        </form>
+
+        <div class="payment-buttons">
+            <button class="pix-button" 
+                    data-value="1.95" 
+                    data-pix-key="00020126580014br.gov.bcb.pix013657bdba80-aa66-485d-a6f4-5fbc7a4a8a4552040000530398654041.955802BR5925RODRIGO DOS SANTOS FERREI6013Florianopolis6211050726f7879630457AE">
+                R$1,95 Escolha um filme do perfil que GOSTOU
+            </button>
+            <button class="pix-button" 
+                    data-value="4.95" 
+                    data-pix-key="00020126890014br.gov.bcb.pix013657bdba80-aa66-485d-a6f4-5fbc7a4a8a450227Acesso a tudo por 35 dias! 52040000530398654044.955802BR5925RODRIGO DOS SANTOS FERREI6013Florianopolis6211050726f78796304D345">
+                R$4,95 Acesso a todos os Filmes EDITADOS
+            </button>
+        </div>
+
+        <div class="custom-cta-container">
+            <a href="https://pay.kirvano.com/r/7b7712a2-90d1-4ce7-8eb7-3ea91f5e4fb3" target="_blank" class="custom-cta-button">
+                <span>R$21,00 Tudo em um só lugar só falta VOCê</span>
+            </a>
+        </div>
+
+    </div>
+
+    <div id="pixModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Falta pouco! Pague seu PIX de R$<span id="pixValue"></span></h2>
+            
+            <p style="margin-top: 20px;">1. Use o PIX Copia e Cola:</p>
+            <textarea id="pixKey" rows="3" readonly></textarea>
+            <button id="copyPixKey" class="copy-button">Copiar Chave</button>
+            
+            <hr class="separator">
+            <p>2. Após pagar, clique aqui para confirmar:</p>
+            
+            <button id="confirmPaymentButton" class="payment-confirmed-button">
+                JÁ PAGUEI!
+            </button>
+        </div>
+    </div>
+
+    <div id="successModal" class="modal">
+        <div class="modal-content text-center">
+            <span class="close-success-button">&times;</span>
+            <h2>Obrigado!</h2>
+            <img src="logo.png" alt="Sucesso" class="success-image">
+            <p>Aguarde Confirmação Por Favor.</p>
+        </div>
+    </div>
+
+    <a href="https://wa.me/5511916072188?text=Ol%C3%A1%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20Live%20PIX!" 
+       class="whatsapp-float" 
+       target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <footer>
+        <div class="footer-content">
+            Site desenvolvido por
+            <a href="https://www.instagram.com/a_provados/" target="_blank">
+                <img src="favicon (1).png" alt="Logo Aprovados" class="footer-logo">
+                aprovados
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        /**
+         * Script para a página Live PIX
+         * Engenheiro: CODIGOS (Sua Persona IA)
+         * Foco: Solução "Sem Gateway" com notificação via WhatsApp.
+         * Versão 2.1: Adicionado botão de compartilhar.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- SELEÇÃO DE ELEMENTOS DO DOM ---
+            // Modais (Pop-ups)
+            const pixModal = document.getElementById('pixModal');
+            const successModal = document.getElementById('successModal');
+            
+            // Botões de Fechar Modais
+            const closePixModalBtn = document.querySelector('.close-button');
+            const closeSuccessModalBtn = document.querySelector('.close-success-button');
+            
+            // Botões de Ação
+            const pixButtons = document.querySelectorAll('.pix-button');
+            const confirmPaymentButton = document.getElementById('confirmPaymentButton');
+            const copyPixKeyButton = document.getElementById('copyPixKey');
+            const shareButton = document.getElementById('shareButton'); // NOVO: Botão Compartilhar
+
+            // Campos do Formulário
+            const form = document.getElementById('userInfoForm');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+
+            // --- CONFIGURAÇÃO PRINCIPAL ---
+            // MUDE AQUI: Coloque seu número de WhatsApp com código do país + DDD
+            // Exemplo: 55 (Brasil) 11 (SP) 999998888
+            const adminWhatsAppNumber = '5511916072188'; 
+
+            // --- FUNÇÕES DE CONTROLE DOS MODAIS ---
+
+            /**
+             * Abre um modal (pop-up).
+             * @param {HTMLElement} modal - O elemento do modal a ser aberto.
+             */
+            function openModal(modal) {
+                modal.style.display = 'block';
+            }
+
+            /**
+             * Fecha um modal (pop-up).
+             * @param {HTMLElement} modal - O elemento do modal a ser fechado.
+             */
+            function closeModal(modal) {
+                modal.style.display = 'none';
+            }
+
+            /**
+             * Valida o formulário.
+             * @returns {boolean} - True se o formulário for válido, False caso contrário.
+             */
+            function validateForm() {
+                // checkValidity() dispara a validação HTML5 nativa
+                if (!form.checkValidity()) {
+                    alert('Por favor, preencha todos os campos corretamente (Nome, E-mail e WhatsApp) antes de continuar.');
+                    // reportValidity() mostra as mensagens de erro do HTML5 (ex: "Preencha este campo")
+                    form.reportValidity(); 
+                    return false;
+                }
+                return true;
+            }
+
+            // --- LÓGICA PRINCIPAL DE EVENTOS ---
+
+            // NOVO: 0. Evento de clique no Botão de Compartilhar
+            if (shareButton) {
+                shareButton.addEventListener('click', async () => {
+                    const shareData = {
+                        title: document.title, // Pega o título da página
+                        text: 'Confira este link!', // Mensagem padrão
+                        url: window.location.href // URL atual
+                    };
+                    try {
+                        // Tenta usar a API de compartilhamento nativa (Mobile/Desktop)
+                        if (navigator.share) {
+                            await navigator.share(shareData);
+                        } else {
+                            // Fallback para copiar a URL (Desktop sem API de share)
+                            await navigator.clipboard.writeText(window.location.href);
+                            alert('Link copiado para a área de transferência!');
+                        }
+                    } catch (err) {
+                        console.error('Erro ao compartilhar:', err);
+                        // Fallback final se tudo falhar (ex: contexto não seguro)
+                        alert('Não foi possível compartilhar. Copie o link manualmente: ' + window.location.href);
+                    }
+                });
+            }
+
+            // 1. Evento de clique nos botões de PIX (R$1.95, R$4.95, etc.)
+            pixButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    
+                    // Passo 1: Validar o formulário antes de tudo
+                    if (!validateForm()) {
+                        return; // Para a execução se o formulário for inválido
+                    }
+
+                    // Passo 2: Coletar dados do formulário (já validados)
+                    const name = nameInput.value;
+                    const email = emailInput.value;
+                    const phone = phoneInput.value;
+
+                    // Passo 3: Coletar dados do botão que foi clicado
+                    const value = button.getAttribute('data-value');
+                    const pixKey = button.getAttribute('data-pix-key');
+
+                    // Passo 4: Atualizar o conteúdo do Modal PIX
+                    document.getElementById('pixValue').textContent = value;
+                    document.getElementById('pixKey').value = pixKey;
+
+                    // Passo 5: Preparar a mensagem de notificação para o WhatsApp
+                    // Usamos \n para quebras de linha no WhatsApp
+                    const message = `🚀 NOVO PAGAMENTO INICIADO (Live PIX) 🚀\n\n` +
+                                    `Valor: R$ ${value}\n` +
+                                    `Nome: ${name}\n` +
+                                    `Email: ${email}\n` +
+                                    `Telefone: ${phone}\n\n` +
+                                    `Aguardando confirmação manual do pagamento...`;
+                    
+                    // A função encodeURIComponent() formata a mensagem para ser usada em um link (URL)
+                    const whatsappLink = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(message)}`;
+
+                    // Passo 6: Armazenar o link gerado no botão "JÁ PAGUEI"
+                    // Usamos um atributo 'data-' para guardar o link
+                    confirmPaymentButton.setAttribute('data-whatsapp-link', whatsappLink);
+
+                    // Passo 7: Abrir o Modal de Pagamento
+                    openModal(pixModal);
+                });
+            });
+
+            // 2. Evento de clique no botão "JÁ PAGUEI"
+            confirmPaymentButton.addEventListener('click', () => {
+                // Pega o link do WhatsApp que armazenamos no Passo 6
+                const whatsappLink = confirmPaymentButton.getAttribute('data-whatsapp-link');
+
+                // Abre o WhatsApp em uma nova aba com a mensagem pronta
+                if (whatsappLink) {
+                    window.open(whatsappLink, '_blank');
+                }
+
+                // Fecha o modal do PIX e abre o modal de Sucesso
+                closeModal(pixModal);
+                openModal(successModal);
+            });
+
+        
+            // 3. Evento de clique para COPIAR a chave PIX
+            copyPixKeyButton.addEventListener('click', () => {
+                const pixKeyInput = document.getElementById('pixKey');
+                
+                // Seleciona o texto dentro do <textarea>
+                pixKeyInput.select();
+                pixKeyInput.setSelectionRange(0, 99999); // Para compatibilidade com mobile
+
+                try {
+                    // Tenta usar a API moderna (navigator.clipboard)
+                    navigator.clipboard.writeText(pixKeyInput.value).then(() => {
+                        copyPixKeyButton.textContent = 'Copiado!';
+                    }).catch(() => {
+                        // Fallback para o método antigo (document.execCommand)
+                        document.execCommand('copy');
+                        copyPixKeyButton.textContent = 'Copiado!';
+                    });
+                } catch (err) {
+                    // Fallback final se tudo falhar
+                    document.execCommand('copy');
+                    copyPixKeyButton.textContent = 'Copiado!';
+                }
+
+                // Reseta o texto do botão após 2 segundos
+                setTimeout(() => {
+                    copyPixKeyButton.textContent = 'Copiar Chave';
+                }, 2000); 
+            });
+
+
+            // --- EVENTOS DE FECHAMENTO DOS MODAIS ---
+
+            // Fecha ao clicar no 'X' do modal PIX
+            closePixModalBtn.addEventListener('click', () => closeModal(pixModal));
+            
+            // Fecha ao clicar no 'X' do modal Sucesso
+            closeSuccessModalBtn.addEventListener('click', () => closeModal(successModal));
+
+            // Fecha o modal se o usuário clicar fora da caixa de conteúdo (no fundo escuro)
+            window.addEventListener('click', (event) => {
+                if (event.target === pixModal) {
+                    closeModal(pixModal);
+                }
+                if (event.target === successModal) {
+                    closeModal(successModal);
+                }
+            });
+
+        });
+    </script>
+    </body>
+</html>
