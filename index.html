@@ -13,13 +13,16 @@
         /* --- CONFIGURAÇÕES GLOBAIS (Variáveis de Cor) --- */
         :root {
             /* MUDE AQUI: Defina sua paleta de cores */
-            --cor-primaria: #0d1117;    /* Um azul-escuro/preto */
-            --cor-secundaria: #161b22;   /* Um cinza-escuro */
+            --cor-primaria: #0d1117;     /* Um azul-escuro/preto */
+            --cor-secundaria: #161b22;    /* Um cinza-escuro */
             --cor-destaque: #58a6ff;     /* Um azul claro (links) */
             --cor-sucesso: #238636;      /* Verde */
             --cor-texto: #c9d1d9;       /* Cinza claro (texto) */
-            --cor-fundo-transp: rgba(22, 27, 34, 0.85); /* Fundo do container */
             --cor-borda: rgba(255, 255, 255, 0.1);
+
+            /* ATUALIZADO: Cor do container solicitada */
+            --cor-container-fundo: #f8a826;
+            --cor-container-texto: #0d1117; /* Texto escuro para contraste com laranja */
         }
 
         /* --- Reset Básico --- */
@@ -36,7 +39,9 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            /* ATUALIZADO: Adicionado padding-bottom para o rodapé não colar no container em telas baixas */
             padding: 20px;
+            padding-bottom: 80px; 
             transition: background 0.5s ease;
         }
 
@@ -44,28 +49,21 @@
 
         /* 1. Fundo de Cor (Padrão) */
         body.bg-color {
-            /* MUDE AQUI: Cor de fundo sólida ou gradiente */
-            
-            /* ATUALIZADO CONFORME SOLICITADO: 
-               A cor sólida padrão agora é o laranja solicitado.
-               Para usar esta cor, mude a classe do <body> para "bg-color".
-            */
-            background: #f8a826; 
+            background: var(--cor-container-fundo); /* Usa a cor laranja solicitada */
         }
 
         /* 2. Fundo de Imagem */
         body.bg-image {
-            /* MUDE AQUI: URL da Imagem de Fundo Externa 
-               (Ex: Pexels, Unsplash, Imgur, etc.)
-            */
             background-image: url('https://images.pexels.com/photos/167699/pexels-photo-167699.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
 
-        /* 3. Fundo de Vídeo */
-        .background-video {
+        /* --- ATUALIZADO: Bloco de Fundo de Vídeo (MP4 e YouTube) --- */
+        
+        /* 3. Fundo de Vídeo (MP4 Local/Direto) */
+        .background-video-mp4 {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -75,18 +73,31 @@
             width: auto;
             height: auto;
             z-index: -2;
+            display: none; 
+        }
+        body.bg-video-mp4 .background-video-mp4 {
+            display: block; /* Mostra o vídeo MP4 */
+        }
+
+        /* 4. NOVO: Fundo de Vídeo (YouTube) */
+        .background-video-youtube {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            /* Garante que o vídeo cubra toda a tela (aspect ratio 16:9) */
+            width: 100vw;
+            height: 56.25vw; /* 100 / (16/9) = 56.25 */
+            min-height: 100vh;
+            min-width: 177.77vh; /* 100 * (16/9) = 177.77 */
+            transform: translate(-50%, -50%);
+            z-index: -2;
+            pointer-events: none; /* Impede cliques no vídeo */
             display: none; /* Oculto por padrão */
         }
-        body.bg-video .background-video {
-            display: block; /* Mostra o vídeo */
+        body.bg-video .background-video-youtube {
+            display: block; /* Mostra o vídeo do YouTube */
         }
-        
-        /* NOTA SOBRE YOUTUBE: 
-           Se quiser usar um vídeo do YouTube como fundo, o método é diferente.
-           Você precisará substituir a tag <video> no HTML por um <iframe>
-           e aplicar estilos CSS para cobrir a tela. 
-           O método atual (tag <video>) funciona perfeitamente para links diretos .mp4 (como os do Pexels).
-        */
+        /* Fim da atualização do Fundo */
 
 
         /* Overlay (para escurecer fundo de imagem/vídeo e melhorar leitura) */
@@ -101,19 +112,20 @@
             display: none; /* Oculto por padrão */
         }
         body.bg-image .overlay,
-        body.bg-video .overlay {
+        body.bg-video .overlay,
+        body.bg-video-mp4 .overlay {
             display: block;
         }
 
 
-        /* --- NOVO: BOTÃO DE COMPARTILHAR (Topo Direito) --- */
+        /* --- Botão de Compartilhar (Topo Direito) --- */
         .share-button {
             position: fixed;
             top: 20px;
             right: 20px;
             width: 50px;
             height: 50px;
-            background-color: var(--cor-fundo-transp); /* Reutiliza o "glassmorphism" */
+            background-color: rgba(22, 27, 34, 0.85); /* Glassmorphism */
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             border: 1px solid var(--cor-borda);
@@ -130,16 +142,18 @@
         }
         .share-button:hover {
             background-color: var(--cor-destaque);
-            color: var(--cor-primaria); /* Contraste com o destaque */
+            color: var(--cor-primaria);
             transform: scale(1.1);
         }
 
 
-        /* --- CONTAINER PRINCIPAL (Efeito "Glassmorphism") --- */
+        /* --- CONTAINER PRINCIPAL --- */
         .container {
-            background: var(--cor-fundo-transp);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            /* ATUALIZADO: Fundo laranja sólido e texto escuro para contraste */
+            background: var(--cor-container-fundo);
+            color: var(--cor-container-texto); 
+            
+            /* backdrop-filter e -webkit-backdrop-filter removidos pois a cor é opaca */
             border: 1px solid var(--cor-borda);
             border-radius: 16px;
             padding: 25px;
@@ -147,9 +161,11 @@
             max-width: 450px;
             text-align: center;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            /* Posição relativa para o logo flutuar em cima */
             position: relative; 
-            margin-top: 60px; /* Espaço para o logo que transborda */
+            margin-top: 60px;
+            
+            /* ATUALIZADO: Margem inferior para dar espaço ao rodapé */
+            margin-bottom: 60px; 
         }
 
         /* --- LOGO (Círculo) --- */
@@ -159,9 +175,8 @@
             border-radius: 50%;
             border: 4px solid var(--cor-destaque);
             overflow: hidden;
-            /* Puxa o logo para cima, metade para fora do container */
             position: absolute; 
-            top: -60px; /* Metade da altura (120px / 2) */
+            top: -60px;
             left: 50%;
             transform: translateX(-50%);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
@@ -170,7 +185,7 @@
         .logo {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Garante que a imagem preencha o círculo */
+            object-fit: cover;
         }
 
         /* --- FORMULÁRIO --- */
@@ -186,8 +201,8 @@
             padding: 14px;
             border: 1px solid #30363d;
             border-radius: 8px;
-            background: #0d1117; /* Fundo do input */
-            color: var(--cor-texto);
+            background: #0d1117; /* Fundo do input (mantido escuro) */
+            color: var(--cor-texto); /* Texto do input (mantido claro) */
             font-size: 16px;
         }
         .form-group input::placeholder {
@@ -200,17 +215,60 @@
         }
         .form-group small {
             font-size: 12px;
-            color: #888;
+            /* ATUALIZADO: Cor escura para legibilidade no fundo laranja */
+            color: #49330c; 
             margin-top: 4px;
             display: block;
         }
 
-        /* --- BOTÕES DE PIX --- */
+        /* --- NOVO: (Req 1 & 3) BOTÕES REDONDOS SOCIAIS --- */
+        .social-links-container {
+            display: flex;
+            justify-content: space-around; /* ou space-evenly */
+            align-items: center;
+            margin: 25px 0;
+            padding: 10px 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .social-link {
+            /* ATUALIZAÇÃO SOLICITADA: Botões aumentados (de 55px para 60px) */
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--cor-secundaria);
+            border: 2px solid var(--cor-primaria);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            overflow: hidden; /* Garante que a imagem fique redonda */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .social-link img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .social-link:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-color: var(--cor-destaque);
+        }
+        .social-link:hover img {
+            transform: scale(1.05); /* Leve zoom na imagem interna */
+        }
+        /* Fim dos Botões Redondos */
+
+
+        /* --- BOTÕES DE PIX (Req 3: Reorganizados) --- */
         .payment-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr; /* 2 colunas */
             gap: 15px;
-            margin-top: 25px;
+            /* margin-top: 25px; (Removido para seguir a nova ordem) */
         }
         .pix-button {
             padding: 15px;
@@ -229,7 +287,7 @@
             transform: translateY(-2px);
         }
 
-        /* --- BOTÃO CTA CUSTOMIZADO (Com Imagem) --- */
+        /* --- BOTÃO CTA CUSTOMIZADO (Req 3: Reorganizado) --- */
         .custom-cta-container {
             margin-top: 20px;
         }
@@ -243,21 +301,17 @@
             font-weight: bold;
             color: #FFFFFF; /* Texto sempre branco para contraste */
             
-            /* ATUALIZADO CONFORME SOLICITADO:
-              MUDE AQUI: Caminho para sua Imagem de Fundo LOCAL (JPG ou PNG) 
-              Exemplo: url('minha-imagem.jpg') ou url('logos/botao.png')
-            */
+            /* MUDE AQUI: Caminho para sua Imagem de Fundo LOCAL */
             background-image: url('botão.jpg');
             background-size: cover;
             background-position: center;
             
-            position: relative; /* Necessário para a sombra */
+            position: relative;
             overflow: hidden;
             z-index: 1;
             transition: transform 0.3s ease;
             border: none;
         }
-        /* Camada de sombra interna para o texto aparecer */
         .custom-cta-button::before {
             content: '';
             position: absolute;
@@ -270,14 +324,13 @@
             transition: background 0.3s ease;
         }
         .custom-cta-button span {
-            /* Sombra no texto (dupla garantia de legibilidade) */
             text-shadow: 1px 1px 5px rgba(0, 0, 0, 1);
         }
         .custom-cta-button:hover {
             transform: scale(1.02);
         }
         .custom-cta-button:hover::before {
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)); /* Sombra mais clara no hover */
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));
         }
 
 
@@ -294,8 +347,6 @@
             background-color: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
-            
-            /* Animação de entrada */
             animation: fadeIn 0.3s ease;
         }
         @keyframes fadeIn {
@@ -331,7 +382,7 @@
             padding: 10px;
             border-radius: 5px;
             resize: none;
-            font-family: monospace; /* Fonte monoespaçada para chaves */
+            font-family: monospace;
         }
         .copy-button {
             width: 100%;
@@ -415,11 +466,12 @@
             transform: scale(1.1);
         }
 
-        /* --- RODAPÉ (ATUALIZADO) --- */
+        /* --- RODAPÉ --- */
         footer {
             position: fixed;
-            bottom: 10px;
-            left: 0; /* Garante que ocupe a largura toda */
+            /* ATUALIZADO: Posição inferior ajustada */
+            bottom: 20px; 
+            left: 0;
             width: 100%;
             text-align: center;
             font-size: 14px;
@@ -428,9 +480,8 @@
             padding: 0 20px;
         }
         
-        /* NOVO: Container do conteúdo do rodapé */
         .footer-content {
-            display: inline-flex; /* Alinha o "Feito por" e o link/logo */
+            display: inline-flex;
             align-items: center;
             justify-content: center;
         }
@@ -439,49 +490,56 @@
             color: var(--cor-destaque);
             text-decoration: none;
             font-weight: bold;
-            
-            /* NOVO: Alinhamento da logo com o texto */
             display: inline-flex;
             align-items: center;
-            margin-left: 5px; /* Espaço entre "Feito por" e o link */
+            margin-left: 5px;
         }
         footer a:hover {
             text-decoration: underline;
         }
-
-        /* NOVO: Estilo da Logo no Rodapé */
         .footer-logo {
-            height: 20px; /* Ajuste a altura da sua logo */
+            height: 20px;
             width: auto;
-            margin-right: 5px; /* Espaço entre a logo e o texto "aprovados" */
+            margin-right: 5px;
             vertical-align: middle; 
         }
 
         /* --- Ajustes para telas pequenas (Responsividade) --- */
         @media (max-width: 480px) {
+            body {
+                padding-bottom: 70px; /* Mais espaço para rodapé no mobile */
+            }
             .container {
+                /* ATUALIZAÇÃO SOLICITADA: Container menor (90%) para ver mais o fundo */
+                width: 90%;
                 padding: 20px;
-                margin-top: 60px; /* Garante espaço para o logo */
+                margin-top: 60px;
+                margin-bottom: 40px; /* Margem inferior mobile */
             }
             
+            /* ATUALIZAÇÃO SOLICITADA: Botões sociais maiores no mobile (55px) */
+            .social-link {
+                width: 55px;
+                height: 55px;
+            }
+
             .payment-buttons {
-                /* Muda para 1 coluna em telas pequenas */
                 grid-template-columns: 1fr; 
             }
 
             .modal-content {
-                margin: 20% auto; /* Centraliza melhor em telas menores */
+                margin: 20% auto;
                 padding: 20px;
             }
 
             .logo-container {
                 width: 100px;
                 height: 100px;
-                top: -50px; /* Metade da nova altura */
+                top: -50px;
             }
 
             .payment-form {
-                margin-top: 60px; /* Espaço para o novo logo */
+                margin-top: 60px;
             }
             
             .whatsapp-float {
@@ -492,7 +550,6 @@
                 font-size: 24px;
             }
 
-            /* NOVO: Ajuste do botão de compartilhar */
             .share-button {
                 top: 15px;
                 right: 15px;
@@ -503,15 +560,15 @@
 
             footer {
                 font-size: 12px;
+                bottom: 15px;
             }
             
-            /* NOVO: Ajuste da logo no rodapé */
             .footer-logo {
                 height: 16px;
             }
         }
     </style>
-    </head>
+</head>
 
 <body class="bg-video"> 
 
@@ -519,10 +576,13 @@
         <i class="fas fa-share-alt"></i>
     </button>
 
-    <video autoplay muted loop class="background-video">
-        <source src="https://www.pexels.com/pt-br/download/video/6789669/" type="video/mp4">
-        Seu navegador não suporta vídeos.
-    </video>
+    <iframe 
+        class="background-video-youtube"
+        src="https://www.youtube.com/embed/yXPWsdT43YE?autoplay=1&mute=1&loop=1&playlist=yXPWsdT43YE&controls=0&showinfo=0&autohide=1&modestbranding=1&rel=0" 
+        frameborder="0" 
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+    </iframe>
     
     <div class="overlay"></div>
 
@@ -545,6 +605,24 @@
             </div>
         </form>
 
+        <div class="social-links-container">
+            <a href="https://www.instagram.com/pauseoficial/" target="_blank" class="social-link" title="Instagram">
+                <img src="instagram.png" alt="Instagram">
+            </a>
+            
+            <a href="https://www.tiktok.com/@p_aause" target="_blank" class="social-link" title="TikTok">
+                <img src="tiktok.png" alt="TikTok">
+            </a>
+
+            <a href="https://www.youtube.com/@pauseoficial" target="_blank" class="social-link" title="Telegram">
+                <img src="youtube.png" alt="Telegram">
+            </a>
+
+            <a href="https://reserva.ink/pause" target="_blank" class="social-link" title="Discord">
+                <img src="camisetas.png" alt="Discord">
+            </a>
+        </div>
+        
         <div class="payment-buttons">
             <button class="pix-button" 
                     data-value="1.95" 
@@ -614,50 +692,43 @@
          * Script para a página Live PIX
          * Engenheiro: CODIGOS (Sua Persona IA)
          * Foco: Solução "Sem Gateway" com notificação via WhatsApp.
-         * Versão 2.1: Adicionado botão de compartilhar.
+         * Versão 3.0: 
+         * - Adicionada integração com n8n (Req 4)
+         * - Adicionada integração com Google Sheets (Req 5)
+         * - Ambas integrações disparam simultaneamente (Req 6)
+         * - Lógica de compartilhamento mantida.
          */
         document.addEventListener('DOMContentLoaded', () => {
 
             // --- SELEÇÃO DE ELEMENTOS DO DOM ---
-            // Modais (Pop-ups)
             const pixModal = document.getElementById('pixModal');
             const successModal = document.getElementById('successModal');
-            
-            // Botões de Fechar Modais
             const closePixModalBtn = document.querySelector('.close-button');
             const closeSuccessModalBtn = document.querySelector('.close-success-button');
-            
-            // Botões de Ação
             const pixButtons = document.querySelectorAll('.pix-button');
             const confirmPaymentButton = document.getElementById('confirmPaymentButton');
             const copyPixKeyButton = document.getElementById('copyPixKey');
-            const shareButton = document.getElementById('shareButton'); // NOVO: Botão Compartilhar
-
-            // Campos do Formulário
+            const shareButton = document.getElementById('shareButton');
             const form = document.getElementById('userInfoForm');
             const nameInput = document.getElementById('name');
             const emailInput = document.getElementById('email');
             const phoneInput = document.getElementById('phone');
 
             // --- CONFIGURAÇÃO PRINCIPAL ---
-            // MUDE AQUI: Coloque seu número de WhatsApp com código do país + DDD
-            // Exemplo: 55 (Brasil) 11 (SP) 999998888
             const adminWhatsAppNumber = '5511916072188'; 
+
+            // --- NOVO: (Req 4 & 5) URLs DAS INTEGRAÇÕES ---
+            // MUDE AQUI: URLs fornecidas para n8n e Google Sheets
+            const N8N_WEBHOOK_URL = 'https://automacoe-n8n.bitxsu.easypanel.host/webhook-test/filmes';
+            const GSHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzZYQDN10XqpsMUHueOXxgZe4dO37XAj-vpWUBz1IJQnbE8tR3MoJjlSVuw5ZsiodrL/exec';
+
 
             // --- FUNÇÕES DE CONTROLE DOS MODAIS ---
 
-            /**
-             * Abre um modal (pop-up).
-             * @param {HTMLElement} modal - O elemento do modal a ser aberto.
-             */
             function openModal(modal) {
                 modal.style.display = 'block';
             }
 
-            /**
-             * Fecha um modal (pop-up).
-             * @param {HTMLElement} modal - O elemento do modal a ser fechado.
-             */
             function closeModal(modal) {
                 modal.style.display = 'none';
             }
@@ -667,38 +738,75 @@
              * @returns {boolean} - True se o formulário for válido, False caso contrário.
              */
             function validateForm() {
-                // checkValidity() dispara a validação HTML5 nativa
                 if (!form.checkValidity()) {
                     alert('Por favor, preencha todos os campos corretamente (Nome, E-mail e WhatsApp) antes de continuar.');
-                    // reportValidity() mostra as mensagens de erro do HTML5 (ex: "Preencha este campo")
                     form.reportValidity(); 
                     return false;
                 }
                 return true;
             }
 
+            /**
+             * NOVO: (Req 4, 5, 6) Envia dados para múltiplos endpoints (n8n, GSheets)
+             * Esta função dispara ambas as requisições em paralelo (fire-and-forget).
+             * @param {object} data - Os dados do formulário e pagamento.
+             */
+            async function sendDataToEndpoints(data) {
+                const payload = JSON.stringify(data);
+
+                // --- 1. Envio para n8n (JSON) ---
+                // Requisição padrão, aguarda uma resposta JSON.
+                const n8nPromise = fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload
+                })
+                .then(response => response.json().catch(() => ({}))) // .json() pode falhar se n8n não retornar json
+                .then(result => console.log('Integração n8n OK:', result))
+                .catch(error => console.error('Erro na integração n8n:', error));
+
+                // --- 2. Envio para Google Sheets (JSON com 'no-cors') ---
+                // Google App Scripts (macros/s/...) são conhecidos por causar
+                // problemas de CORS em POSTs de navegadores externos (devido a redirects 302).
+                // Usamos 'mode: 'no-cors'' como estratégia "fire and forget" (disparar e esquecer).
+                // Isso envia os dados, mas não conseguimos ler a resposta (o que é aceitável aqui).
+                const gsheetsPromise = fetch(GSHEETS_WEBHOOK_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Essencial para evitar erros de CORS com Google Scripts
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload
+                })
+                .then(() => console.log('Integração GSheets: Dados enviados (no-cors).'))
+                .catch(error => console.error('Erro de rede na integração GSheets:', error)); // Só pegará falhas de rede
+
+                // Aguarda ambas as promessas terminarem (sem bloquear o usuário)
+                try {
+                    await Promise.allSettled([n8nPromise, gsheetsPromise]);
+                    console.log('Integrações (n8n & GSheets) finalizadas.');
+                } catch (e) {
+                    console.error("Erro ao executar promessas de integração:", e);
+                }
+            }
+
             // --- LÓGICA PRINCIPAL DE EVENTOS ---
 
-            // NOVO: 0. Evento de clique no Botão de Compartilhar
+            // 0. Evento de clique no Botão de Compartilhar
             if (shareButton) {
                 shareButton.addEventListener('click', async () => {
                     const shareData = {
-                        title: document.title, // Pega o título da página
-                        text: 'Confira este link!', // Mensagem padrão
-                        url: window.location.href // URL atual
+                        title: document.title,
+                        text: 'Confira este link!',
+                        url: window.location.href
                     };
                     try {
-                        // Tenta usar a API de compartilhamento nativa (Mobile/Desktop)
                         if (navigator.share) {
                             await navigator.share(shareData);
                         } else {
-                            // Fallback para copiar a URL (Desktop sem API de share)
                             await navigator.clipboard.writeText(window.location.href);
                             alert('Link copiado para a área de transferência!');
                         }
                     } catch (err) {
                         console.error('Erro ao compartilhar:', err);
-                        // Fallback final se tudo falhar (ex: contexto não seguro)
                         alert('Não foi possível compartilhar. Copie o link manualmente: ' + window.location.href);
                     }
                 });
@@ -708,26 +816,21 @@
             pixButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     
-                    // Passo 1: Validar o formulário antes de tudo
                     if (!validateForm()) {
-                        return; // Para a execução se o formulário for inválido
+                        return;
                     }
 
-                    // Passo 2: Coletar dados do formulário (já validados)
                     const name = nameInput.value;
                     const email = emailInput.value;
                     const phone = phoneInput.value;
-
-                    // Passo 3: Coletar dados do botão que foi clicado
                     const value = button.getAttribute('data-value');
                     const pixKey = button.getAttribute('data-pix-key');
 
-                    // Passo 4: Atualizar o conteúdo do Modal PIX
+                    // Atualiza o conteúdo do Modal PIX
                     document.getElementById('pixValue').textContent = value;
                     document.getElementById('pixKey').value = pixKey;
 
-                    // Passo 5: Preparar a mensagem de notificação para o WhatsApp
-                    // Usamos \n para quebras de linha no WhatsApp
+                    // Prepara a mensagem de notificação para o WhatsApp
                     const message = `🚀 NOVO PAGAMENTO INICIADO (Live PIX) 🚀\n\n` +
                                     `Valor: R$ ${value}\n` +
                                     `Nome: ${name}\n` +
@@ -735,29 +838,52 @@
                                     `Telefone: ${phone}\n\n` +
                                     `Aguardando confirmação manual do pagamento...`;
                     
-                    // A função encodeURIComponent() formata a mensagem para ser usada em um link (URL)
                     const whatsappLink = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(message)}`;
 
-                    // Passo 6: Armazenar o link gerado no botão "JÁ PAGUEI"
-                    // Usamos um atributo 'data-' para guardar o link
-                    confirmPaymentButton.setAttribute('data-whatsapp-link', whatsappLink);
+                    // --- ATUALIZADO: (Req 4, 5, 6) Armazenar DADOS BRUTOS ---
+                    // Criamos o payload de dados que será enviado para as automações
+                    const dataPayload = {
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        value: parseFloat(value), // Envia como número
+                        pixKey: pixKey,
+                        timestamp: new Date().toISOString()
+                    };
 
-                    // Passo 7: Abrir o Modal de Pagamento
+                    // Armazena o link E OS DADOS BRUTOS no botão "JÁ PAGUEI"
+                    confirmPaymentButton.setAttribute('data-whatsapp-link', whatsappLink);
+                    confirmPaymentButton.setAttribute('data-payload', JSON.stringify(dataPayload)); // Guarda o JSON como string
+
                     openModal(pixModal);
                 });
             });
 
             // 2. Evento de clique no botão "JÁ PAGUEI"
             confirmPaymentButton.addEventListener('click', () => {
-                // Pega o link do WhatsApp que armazenamos no Passo 6
                 const whatsappLink = confirmPaymentButton.getAttribute('data-whatsapp-link');
+                
+                // --- ATUALIZADO: (Req 4, 5, 6) Disparar integrações ---
+                const dataPayloadString = confirmPaymentButton.getAttribute('data-payload');
+                
+                if (dataPayloadString) {
+                    try {
+                        const dataPayload = JSON.parse(dataPayloadString);
+                        // Chamada assíncrona. Não usamos 'await' aqui 
+                        // para não bloquear a abertura imediata do WhatsApp.
+                        sendDataToEndpoints(dataPayload); 
+                        console.log("Disparando envio de dados para n8n e GSheets...");
+                    } catch (e) {
+                        console.error("Erro ao processar dados para envio:", e);
+                    }
+                }
+                // --- Fim da atualização ---
 
-                // Abre o WhatsApp em uma nova aba com a mensagem pronta
+                // Abre o WhatsApp (lógica original mantida)
                 if (whatsappLink) {
                     window.open(whatsappLink, '_blank');
                 }
 
-                // Fecha o modal do PIX e abre o modal de Sucesso
                 closeModal(pixModal);
                 openModal(successModal);
             });
@@ -766,27 +892,21 @@
             // 3. Evento de clique para COPIAR a chave PIX
             copyPixKeyButton.addEventListener('click', () => {
                 const pixKeyInput = document.getElementById('pixKey');
-                
-                // Seleciona o texto dentro do <textarea>
                 pixKeyInput.select();
-                pixKeyInput.setSelectionRange(0, 99999); // Para compatibilidade com mobile
+                pixKeyInput.setSelectionRange(0, 99999); 
 
                 try {
-                    // Tenta usar a API moderna (navigator.clipboard)
                     navigator.clipboard.writeText(pixKeyInput.value).then(() => {
                         copyPixKeyButton.textContent = 'Copiado!';
                     }).catch(() => {
-                        // Fallback para o método antigo (document.execCommand)
                         document.execCommand('copy');
                         copyPixKeyButton.textContent = 'Copiado!';
                     });
                 } catch (err) {
-                    // Fallback final se tudo falhar
                     document.execCommand('copy');
                     copyPixKeyButton.textContent = 'Copiado!';
                 }
 
-                // Reseta o texto do botão após 2 segundos
                 setTimeout(() => {
                     copyPixKeyButton.textContent = 'Copiar Chave';
                 }, 2000); 
@@ -794,14 +914,9 @@
 
 
             // --- EVENTOS DE FECHAMENTO DOS MODAIS ---
-
-            // Fecha ao clicar no 'X' do modal PIX
             closePixModalBtn.addEventListener('click', () => closeModal(pixModal));
-            
-            // Fecha ao clicar no 'X' do modal Sucesso
             closeSuccessModalBtn.addEventListener('click', () => closeModal(successModal));
 
-            // Fecha o modal se o usuário clicar fora da caixa de conteúdo (no fundo escuro)
             window.addEventListener('click', (event) => {
                 if (event.target === pixModal) {
                     closeModal(pixModal);
@@ -813,5 +928,5 @@
 
         });
     </script>
-    </body>
+</body>
 </html>
